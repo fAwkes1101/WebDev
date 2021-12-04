@@ -3,7 +3,7 @@ Arrays
 let arr = [1 , 'Hello', 3, true] 
 // array is initialized with square brackets
 // In JS you can put any kind of data in the array 
-console.log(arr)
+console.log(arr)  // prints array on console
 
 //Array Methods
 let cars = ["BMW" , "Jaguar" , "Mercedes"]
