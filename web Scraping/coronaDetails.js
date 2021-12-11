@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const request = require('request');
 
 request("https://www.worldometers.info/coronavirus/", cb);
-
+console.log("before");
 function cb (error, response, html){
      if(error){
          console.log(error);
@@ -19,5 +19,6 @@ function handleHtml(html){
     console.log("Total deaths: ",selTool(contentArr[1]).text());
     console.log("Total recovered: ",selTool(contentArr[2]).text());
 }
+console.log("after");
 
 
