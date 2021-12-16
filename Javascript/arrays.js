@@ -44,6 +44,15 @@ console.log(cars)
 cars.unshift('alto')
 console.log(cars)
 
+//Delete a elements : splice function 
+cars.splice(2,3); //This will delete elements of index 2,3 and 4. i.e. 3 elements from index 2
+
+//indexof(value) //"value" is it is string
+cars.indexOf("alto"); //returns index of alto if present in array else returns -1
+
+//inclues(value) function
+let find = cars.includes(alto); //returns true or false 
+
 
 
 
