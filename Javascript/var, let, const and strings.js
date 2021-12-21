@@ -103,9 +103,9 @@ slice(start , end); //Returns sliced array from starting index to (end-1)
 let slicedStr = str.slice(3 ,7) // last index is excluded -> (returns string/array from index 3 to 6)
 console.log(slicedStr);
 
-3.// Extracting a part of string -> substr() method
-str.substr(start , length) // start is begning of returned string and length is length of that string from start
-let subString = str.substr(3 , 4 ) // This returns a string from index 3 to index (3+4)
+3.// Extracting a part of string -> substring() method
+str.substring(start , length) // start is begning of returned string and length is length of that string from start
+let subString = str.substring(3 , 4 ) // This returns a string from index 3 to index (3+4)
 console.log(subString)
 
 
