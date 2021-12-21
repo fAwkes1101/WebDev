@@ -1,7 +1,7 @@
 //Jo sabse last me function same name wala hoga exicute hoga
 //No function overloding
 
-//1. first this function will geet memory in heap say at 8k and stack me iamReam variable me 8k store ho jaega
+//1. first this function will get memory in heap say at 8k and stack me iamReam variable me 8k store ho jaega
 function iamReal(){     
     console.log("I am real");
 }

@@ -115,13 +115,14 @@ const watchList = [
 
 function dir(obj){
     if(obj["Director"]=="Christopher Nolan"){
-        return obj;
+        return true;
     }
 }
-function avg(storage,val){
+function avg(storage,val){ // initially val me 0th index ki value padii hogi
     let p = val["imdbRating"];
     return Number(storage) + Number(p) ;
 }
 let res1 = watchList.filter(dir);
+//console.log(res1);
 let res2 = res1.reduce(avg,0);
-console.log(res2/res1.length)
+console.log(res2/res1.length); // average of imdb rating

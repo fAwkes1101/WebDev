@@ -14,11 +14,11 @@ function checkEven(val){
     }
 }
 
-function myFilter(arr,test){
+function myFilter(arr,test){ // pollyFill of filter
     let res =[];
    for(let i=0; i<arr.length;i++){
-       let check =test(arr[i]);
-       if(check==true){
+       let check =test(arr[i]);  // it works on returned true/false values
+       if(check==true){       
            res.push(arr[i]);
        }
    }

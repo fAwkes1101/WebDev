@@ -114,7 +114,7 @@ const watchList = [
   
   function imdb(obj){
       if(obj["imdbRating"]>=8.0)
-      return true;
+      return true; 
       
 
   }
