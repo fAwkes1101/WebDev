@@ -23,8 +23,10 @@ function primeSieve (primeHandler, nonPrimeHandler) {
             nonPrimeHandler(num);
         }
     }
+    return this; // For chaining
 }
 Array.prototype.sieve = primeSieve; //now all arrays in this file will have a pre defined function sieve
+                                    // this return hua hai to chaining ho skti hai, matlb .lga ke baki func use krskte hai jaise map/filter
 
 let arr = [11, 18, 34, 37, 49, 53, 71, 84, 97];
 arr.sieve(logAllPrimes, logAllNonPrimes);
