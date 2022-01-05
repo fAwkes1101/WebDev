@@ -154,7 +154,7 @@
                 if (f.id > fid) {
                     fid = f.id;
                 }
-             if(pid== cfid){
+             if(f.pid== cfid){
                 addFolderHTML(f.name, f.id, cfid); //cfid
              }
             });
