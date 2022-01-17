@@ -1,165 +1,333 @@
 (function(){
-    let btnAddFolder = document.querySelector("#btnAddFolder");
-    let divBreadCrumb = document.querySelector("#divBreadCrumb");
-    let aRootPath = document.querySelector(".path");
-    let divContainer = document.querySelector("#divContainer");
-    let pageTemplates = document.querySelector("#pageTemplates");
-    let fid = -1;
-    let cfid = -1;
-    let folders = [];
+    let btnAddFolder = document.querySelector("#addFolder");
+    let btnAddTextFile = document.querySelector("#addTextFile");
+    let divbreadcrumb = document.querySelector("#breadcrumb");
+    let aRootPath = divbreadcrumb.querySelector("a[purpose='path']");
+    let divContainer = document.querySelector("#container");
+    let templates = document.querySelector("#templates");
+    let resources = [];
+    let cfid = -1; // initially we are at root (which has an id of -1)
+    let rid = 0;
 
     btnAddFolder.addEventListener("click", addFolder);
-    aRootPath.addEventListener("click", navigateBreadcrumb);
+    btnAddTextFile.addEventListener("click", addTextFile);
+    aRootPath.addEventListener("click", viewFolderFromPath);
 
+    // validation - unique, non-blank
     function addFolder(){
-        let fname = prompt("Enter folder's name");
-        if(!!fname){
-            let fidx = folders.findIndex(f => f.name== fname);
-            if(fidx =-1){
-                fid++;
-                folders.push({
-                    id : fid,
-                    name : fname,
-                    pid : cfid
-                });
-
-                addFolderHTML(fname, fid, cfid);
-                saveToStorage();
-
-
-            }
-            else{
-                alert(fname + "already exists");
-            }
-
-        }else{
-            alert("Please enter something");
+        let rname = prompt("Enter folder's name");
+        if(rname != null){
+            rname = rname.trim();
         }
 
+        if(!rname){ // empty name validation
+            alert("Empty name is not allowed.");
+            return;
+        }
+
+        // uniqueness validation
+        let alreadyExists = resources.some(r => r.rname == rname && r.pid == cfid);
+        if(alreadyExists == true){
+            alert(rname + " is already in use. Try some other name");
+            return;
+        }
+
+        let pid = cfid;
+        rid++; 
+        addFolderHTML(rname, rid, pid);
+        resources.push({
+            rid: rid,
+            rname: rname,
+            rtype: "folder",
+            pid: cfid
+        });
+        saveToStorage();
     }
 
-    function editFolder(){
-        let divFolder = this.parentNode;
-        let divName = divFolder.querySelector("[purpose = 'name']");
-        let ofname = divName.innerHTML;
-
-        let nfname = prompt("Enter new name");
-      if(!!nfname){
-        if(nfname!= ofname){
-            let exists = folders.filter(f => f.pid == cfid).some( f=> f.name== nfname);
-            if(exists==false){
-            let folder = folders.filter(f => f.pid == cfid).find( f=> f.name== ofname);
-            folder.name = nfname;
-            
-            divName.innerHTML = nfname;
-
-            saveToStorage();
-        }else{
-            alert(nfname + "already exits");
-        }}
-        else{
-            alert("old name, enter new");
-        }}
-        else{
-            alert("please enter valid name");
+    function addTextFile(){
+        let rname = prompt("Enter text file's name");
+        if(rname != null){
+            rname = rname.trim();
         }
 
-}
-    function navigateBreadcrumb(){
-        let fname = this.innerHTML;
-        cfid = parseInt(this.getAttribute("fid"));
+        if(!rname){ // empty name validation
+            alert("Empty name is not allowed.");
+            return;
+        }
 
-        divContainer.innerHTML ="";
-        folders.filter(f => f.pid == cfid).forEach( f => {
-            addFolderHTML(f.name, f.id, f.pid);
+        // uniqueness validation
+        let alreadyExists = resources.some(r => r.rname == rname && r.pid == cfid);
+        if(alreadyExists == true){
+            alert(rname + " is already in use. Try some other name");
+            return;
+        }
+
+        let pid = cfid;
+        rid++;
+        addTextFileHTML(rname, rid, pid);
+        resources.push({
+            rid: rid,
+            rname: rname,
+            rtype: "text-file",
+            pid: cfid
         });
-        while(this.nextSibling){
-            this.parentNode.removeChild(this.nextSibling);
-        }
+        saveToStorage();
     }
 
     function deleteFolder(){
-        let divFolder = this.parentNode;
+        // delete all folders inside also
+        let spanDelete = this;
+        let divFolder = spanDelete.parentNode;
         let divName = divFolder.querySelector("[purpose='name']");
-        let fidtbd = divFolder.getAttribute("fid");
 
-        let flag = confirm("Are you sure you want to delete " + divName.innerHTML + "?");
-        if (flag == true) {
-            let exists = folders.some( f => f.pid == fidtbd);
-            if(exists==false){
+        let fidTBD = parseInt(divFolder.getAttribute("rid"));
+        let fname = divName.innerHTML;
 
-            let fidx = folders.findIndex(f=> f.id == fidtbd);
-            folders.splice(fidx, 1);
+        let childrenExists = resources.some(r => r.pid == fidTBD);
+        let sure = confirm(`Are you sure you want to delete ${fname}?` + (childrenExists? ". It also has children.": ""));
+        if(!sure){
+            return;
+        }
 
-            // html
-            divContainer.removeChild(divFolder);
+        // html
+        divContainer.removeChild(divFolder);
+        // ram
+        deleteHelper(fidTBD);
 
-            // storage
-            saveToStorage();}
-            else{
-                alert("Can't delete, has childrens!")
+        //  storage
+        saveToStorage();
+    }
+
+    function deleteHelper(fidTBD){
+        let children = resources.filter(r => r.pid == fidTBD);
+        for(let i = 0; i < children.length; i++){
+            deleteHelper(children[i].rid); // this is capable of delete children and their children recursively
+        }
+
+        let ridx = resources.findIndex(r => r.rid == fidTBD);
+        resources.splice(ridx, 1);
+    }
+
+    function deleteTextFile(){
+        let spanDelete = this;
+        let divTextFile = spanDelete.parentNode;
+        let divName = divTextFile.querySelector("[purpose='name']");
+
+        let fidTBD = parseInt(divTextFile.getAttribute("rid"));
+        let fname = divName.innerHTML;
+
+        let sure = confirm(`Are you sure you want to delete ${fname}?`);
+        if(!sure){
+            return;
+        }
+
+        // html
+        divContainer.removeChild(divTextFile);
+        // ram
+        let ridx =resources.findIndex(f=> r.rid==fidTBD);
+        resources.splice(ridx, 1);
+
+        //  storage
+        saveToStorage();
+
+    }
+
+    // empty, old, unique
+    function renameFolder(){
+        let nrname = prompt("Enter folder's name");
+        if(nrname != null){
+            nrname = nrname.trim();
+        }
+
+        if(!nrname){ // empty name validation
+            alert("Empty name is not allowed.");
+            return;
+        }
+
+        let spanRename = this;
+        let divFolder = spanRename.parentNode;
+        let divName = divFolder.querySelector("[purpose=name]");
+        let orname = divName.innerHTML;
+        let ridTBU = parseInt(divFolder.getAttribute("rid"));
+        if(nrname == orname){
+            alert("Please enter a new name.");
+            return;
+        }
+
+        let alreadyExists = resources.some(r => r.rname == nrname && r.pid == cfid);
+        if(alreadyExists == true){
+            alert(nrname + " already exists.");
+            return;
+        }
+
+        // change html
+        divName.innerHTML = nrname;
+        // change ram
+        let resource = resources.find(r => r.rid == ridTBU);
+        resource.rname = nrname;
+        // change storage
+        saveToStorage();
+    }
+
+    function renameTextFile(){
+        let nrname = prompt("Enter folder's name");
+        if(nrname != null){
+            nrname = nrname.trim();
+        }
+
+        if(!nrname){ // empty name validation
+            alert("Empty name is not allowed.");
+            return;
+        }
+
+        let spanRename = this;
+        let divTextFile= spanRename.parentNode;
+        let divName = divFolder.querySelector("[purpose=name]");
+        let orname = divName.innerHTML;
+        let ridTBU = parseInt(divFolder.getAttribute("rid"));
+        if(nrname == orname){
+            alert("Please enter a new name.");
+            return;
+        }
+
+        let alreadyExists = resources.some(r => r.rname == nrname && r.pid == cfid);
+        if(alreadyExists == true){
+            alert(nrname + " already exists.");
+            return;
+        }
+
+        // change html
+        divName.innerHTML = nrname;
+        // change ram
+        let resource = resources.find(r => r.rid == ridTBU);
+        resource.rname = nrname;
+        // change storage
+        saveToStorage();
+    }
+
+    function viewFolder(){
+        let spanView = this;
+        let divFolder = spanView.parentNode;
+        let divName = divFolder.querySelector("[purpose='name']");
+
+        let fname = divName.innerHTML;
+        let fid = parseInt(divFolder.getAttribute("rid"));
+
+        let aPathTemplate = templates.content.querySelector("a[purpose='path']");
+        let aPath = document.importNode(aPathTemplate, true);
+
+        aPath.innerHTML = fname;
+        aPath.setAttribute("rid", fid);
+        aPath.addEventListener("click", viewFolderFromPath);
+        divbreadcrumb.appendChild(aPath);
+
+        cfid = fid;
+        divContainer.innerHTML = "";
+        for(let i = 0; i < resources.length; i++){
+            if(resources[i].pid == cfid){
+                if(resources[i].rtype == "folder"){
+                    addFolderHTML(resources[i].rname, resources[i].rid, resources[i].pid);
+                } else if(resources[i].rtype == "text-file"){
+                    addTextFileHTML(resources[i].rname, resources[i].rid, resources[i].pid);
+                }
             }
         }
     }
-    function viewFolder(){
-        let divFolder = this.parentNode;
-        let divName = divFolder.querySelector("[purpose ='name']");
-        cfid = parseInt(divFolder.getAttribute("fid"));
 
-        let aPathTemplate = pageTemplates.content.querySelector(".path");
-        let aPath = document.importNode(aPathTemplate, true);
-       
-        aPath.innerHTML = divName.innerHTML;
-        aPath.setAttribute("fid", cfid);
-        aPath.addEventListener("click", navigateBreadcrumb);
-        divBreadCrumb.appendChild(aPath);
+    function viewFolderFromPath(){
+        let aPath = this;
+        let fid = parseInt(aPath.getAttribute("rid"));
 
+        // set the breadcrumb
+        for(let i = divbreadcrumb.children.length - 1; i >= 0; i--){
+            if(divbreadcrumb.children[i] == aPath){
+                break;
+            }
+            divbreadcrumb.removeChild(divbreadcrumb.children[i]);
+        }
+
+        // set the container
+        cfid = fid;
         divContainer.innerHTML = "";
-        folders.filter(f => f.pid == cfid).forEach( f => {
-            addFolderHTML(f.name, f.id, f.pid);
-        });
-
+        for(let i = 0; i < resources.length; i++){
+            if(resources[i].pid == cfid){
+                if(resources[i].rtype == "folder"){
+                    addFolderHTML(resources[i].rname, resources[i].rid, resources[i].pid);
+                } else if(resources[i].rtype == "text-file"){
+                    addTextFileHTML(resources[i].rname, resources[i].rid, resources[i].pid);
+                }
+            }
+        }
     }
-    function addFolderHTML(fname, fid, pid){
-        let divFolderTemplate = pageTemplates.content.querySelector(".folder");
-        
-        let divFolder = document.importNode(divFolderTemplate , true);
 
-      
-        let spanEdit = divFolder.querySelector("[action='edit']");
-        let spanDelete = divFolder.querySelector("[action='delete']");
-        let spanView = divFolder.querySelector("[action='view']")
-        let divName = divFolder.querySelector("[purpose='name']");
+    function viewTextFile(){
+    }
 
-        divFolder.setAttribute("fid", fid);
-        divFolder.setAttribute("pid", pid);
-        divName.innerHTML = fname;
+    function addFolderHTML(rname, rid, pid){
+        let divFolderTemplate = templates.content.querySelector(".folder");
+        let divFolder = document.importNode(divFolderTemplate, true); // makes a copy
+
+        let spanRename = divFolder.querySelector("[action=rename]");
+        let spanDelete = divFolder.querySelector("[action=delete]");
+        let spanView = divFolder.querySelector("[action=view]");
+        let divName = divFolder.querySelector("[purpose=name]");
+
+        spanRename.addEventListener("click", renameFolder);
         spanDelete.addEventListener("click", deleteFolder);
-        spanEdit.addEventListener("click", editFolder);
         spanView.addEventListener("click", viewFolder);
+        divName.innerHTML = rname;
+        divFolder.setAttribute("rid", rid);
+        divFolder.setAttribute("pid", pid);
 
         divContainer.appendChild(divFolder);
     }
 
-    function saveToStorage(){
-        let fjson = JSON.stringify(folders);
-        localStorage.setItem("data", fjson);
+    function addTextFileHTML(rname, rid, pid){
+        let divTextFileTemplate = templates.content.querySelector(".text-file");
+        let divTextFile = document.importNode(divTextFileTemplate, true); // makes a copy
+
+        let spanRename = divTextFile.querySelector("[action=rename]");
+        let spanDelete = divTextFile.querySelector("[action=delete]");
+        let spanView = divTextFile.querySelector("[action=view]");
+        let divName = divTextFile.querySelector("[purpose=name]");
+
+        spanRename.addEventListener("click", renameTextFile);
+        spanDelete.addEventListener("click", deleteTextFile);
+        spanView.addEventListener("click", viewTextFile);
+        divName.innerHTML = rname;
+        divTextFile.setAttribute("rid", rid);
+        divTextFile.setAttribute("pid", pid);
+
+        divContainer.appendChild(divTextFile);
     }
 
-    function loadFromStorage() {
-        let fjson = localStorage.getItem("data");
-        if (!!fjson) {
-            folders = JSON.parse(fjson);
-            folders.forEach(f => {
-                if (f.id > fid) {
-                    fid = f.id;
+    function saveToStorage(){
+        let rjson = JSON.stringify(resources); // used to convert jso to a json string which can be saved
+        localStorage.setItem("data", rjson);
+    }
+
+    function loadFromStorage(){
+        let rjson = localStorage.getItem("data");
+        if(!rjson){
+            return;
+        }
+       
+        resources = JSON.parse(rjson);
+        for(let i = 0; i < resources.length; i++){
+            if(resources[i].pid == cfid){
+                if(resources[i].rtype == "folder"){
+                    addFolderHTML(resources[i].rname, resources[i].rid, resources[i].pid);
+                } else if(resources[i].rtype == "text-file"){
+                    addTextFileHTML(resources[i].rname, resources[i].rid, resources[i].pid);
                 }
-             if(f.pid== cfid){
-                addFolderHTML(f.name, f.id, cfid); //cfid
-             }
-            });
+            }
+
+            if(resources[i].rid > rid){
+                rid = resources[i].rid;
+            }
         }
     }
 
     loadFromStorage();
 })();
+// to prevent namespace pollution

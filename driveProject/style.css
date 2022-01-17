@@ -1,52 +1,89 @@
-#btnAddFolder {
-    border-radius: 5px;
-    background-color: azure;
-    width: 200px;
-    margin-left: 600px;
-    padding: 20px;
-    cursor: pointer;
-}
-
-#btnAddFolder:hover {
-    transform: scale(1.02);
-}
-
-#divBreadCrumb {
+#header{
     border: 1px solid black;
-    display: flex;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-.path {
-    cursor: pointer;
-
-    background-color: gray;
-    color: black;
-
+    margin: 10px;
     padding: 10px;
-    border-right: 3px solid black;
+    display: flex;
+    justify-content: center;
 }
 
-.path:hover{
-    background-color: white;
-    color: blue;
+#header button {
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+#header button:hover {
+    transform: scale(1.05);
+    background-color: lightyellow;
+}
+
+#breadcrumb{
+    border: 1px solid black;
+    margin: 10px;
+    display: flex;
+}
+
+#breadcrumb a {
+    background-color: tomato;
+    padding: 10px;
+    border-right: 5px solid black;
+}
+
+#breadcrumb a:hover {
+    background-color: teal;
     text-decoration: underline;
 }
 
-#divContainer {
+#container{
     border: 1px solid black;
+    margin: 10px;
+    padding: 10px;
     display: flex;
-    margin-top: 10px;
+}
+
+#app{
+    border: 1px solid black;
+    margin: 10px;
+  
+}
+#app-title {
+    width: 95%;
+    text-align: center;
+}
+#app-title-bar{
+    display: flex;
+    background-color:  cyan;
+height:40px ;    
+}
+
+#app-menu-bar {
+    display: flex;
+    background-color: teal;
+    height: 40px;
+}
+#app-body{
+    display: flex;
+    background-color: springgreen;
+    height:500px;
 }
 
 .folder {
     background-color: teal;
-    border-radius: 5px;
-    height: 100px;
+    color:white;
+    height: 120px;
     width: 150px;
-    padding: 10px;
+
     margin: 10px;
+    padding: 10px;
+
+    border:2px solid red;
+    border-radius: 10px;
+}
+
+.folder div[purpose=name]{
+    margin-top: 80px;
 }
 
 .folder [action]{
@@ -54,7 +91,35 @@
     cursor: pointer;
 }
 
-div[purpose=name]{
-    margin-top: 50px;
-    color: white;
+.folder [action]:hover {
+    color: blue;
+    transform: scale(2);
+}
+
+
+.text-file {
+    background-color: lightcoral;
+    color:white;
+    height: 120px;
+    width: 150px;
+
+    margin: 10px;
+    padding: 10px;
+
+    border:2px solid red;
+    border-radius: 10px;
+}
+
+.text-file div[purpose=name]{
+    margin-top: 80px;
+}
+
+.text-file [action]{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.text-file [action]:hover {
+    color: blue;
+    transform: scale(2);
 }

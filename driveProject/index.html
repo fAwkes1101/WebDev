@@ -1,23 +1,43 @@
 <html>
     <head>
-        <title>My first hands on frontend</title>
-        <link rel="stylesheet" href="style.css">
+        <title>My First Hand at Frontend</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <button id="btnAddFolder">Add Folder</button>
-        <div id="divBreadCrumb">
-            <a class = "path" fid = "-1">Root</a>
+        <div id="header">
+            <button id="addFolder">Add Folder</button>
+            <button id="addTextFile">Add Text File</button>
         </div>
-        <div id="divContainer"></div>
 
-        <template id="pageTemplates">
-            <div class="folder">
-                <span action="edit">edit</span>
+        <div id="breadcrumb">
+            <a purpose="path" rid="-1">Root</a>
+        </div>
+
+        <div id="container">
+        </div>
+
+        <div id="app">
+            <div id ="app-title">title will come here</div>
+            <span class="material-icons">maximize</span>
+            <span class="material-icons">minimize </span>
+            <span class="material-icons">close   </span>
+        </div>
+
+        <template id="templates">
+            <div class="folder" rid="" pid="">
+                <span action="rename">rename</span>
                 <span action="delete">delete</span>
                 <span action="view">view</span>
                 <div purpose="name"></div>
             </div>
-            <a class = "path"></a>
+            <div class="text-file" rid="" pid="">
+                <span action="rename">rename</span>
+                <span action="delete">delete</span>
+                <span action="view">view</span>
+                <div purpose="name"></div>
+            </div>
+            <a purpose="path" rid="-1"></a>
         </template>
         <script type="text/javascript" src="main.js"></script>
     </body>
