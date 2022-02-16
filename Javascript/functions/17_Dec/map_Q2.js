@@ -1,9 +1,7 @@
 //income < 100 then make it twice using maps
 
 
-let member =[{g : "m", ages:20, income: 200},
-
-{g: "f", ages: 25, income:70}]
+let member =[{g : "m", ages:20, income: 200}, {g: "f", ages: 25, income:70}]
 
 let result = member.map(incomes);
 
